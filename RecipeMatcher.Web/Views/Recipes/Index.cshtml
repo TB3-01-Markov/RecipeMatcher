@@ -1,0 +1,10 @@
+﻿@model IReadOnlyList<RecipeMatcher.Web.Models.Recipe>
+
+<h1>Recipes</h1>
+
+<ul>
+    @foreach (var recipe in Model)
+    {
+        <li>@recipe.Name, @recipe.PreparationMinutes minutes</li>
+    }
+</ul>
