@@ -1,0 +1,10 @@
+﻿@model IReadOnlyList<RecipeMatcher.Web.Models.Ingredient>
+
+<h1>Ingredients</h1>
+
+<ul>
+    @foreach (var ingredient in Model)
+    {
+        <li>@ingredient.Name <a asp-action="Details" asp-route-id="@ingredient.Id">Details</a></li>
+    }
+</ul>

@@ -1,0 +1,14 @@
+﻿@model Ingredient
+
+<form asp-action="Edit" method="post" >
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <input asp-for="Id" type="hidden" />
+
+    <label asp-for="Name"></label>
+    <input asp-for="Name" />
+    <span asp-validation-for="Name"></span>
+
+    <button type="submit">Edit</button>
+</form>
+
