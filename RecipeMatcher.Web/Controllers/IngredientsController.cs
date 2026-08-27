@@ -22,13 +22,27 @@ public class IngredientsController(AppDbContext dbContext) : Controller
     public async Task<IActionResult> Create(Ingredient ingredient)
     {
         if (!ModelState.IsValid) return View(ingredient);
+        
 
         dbContext.Ingredients.Add(ingredient);
         await dbContext.SaveChangesAsync();
 
+
+
+
         return RedirectToAction(nameof(Index));
     }
+    public async bool isExist(Ingredient ingredient)
+    {
+        bool nameExists = await dbContext.Ingredients.AnyAsync(i => i.Name == ingredient.Name);
 
+        if (nameExists)
+        {
+            ModelState.AddModelError("Name", "Error: Already exist");
+            return true;
+        }
+        else return false;
+    }
     //Edit GET
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
