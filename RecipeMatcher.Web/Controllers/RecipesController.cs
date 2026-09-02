@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RecipeMatcher.Web.Models;
 using RecipeMatcher.Web.Data;
+using RecipeMatcher.Web.Models;
+using RecipeMatcher.Web.ViewModels;
+
 namespace RecipeMatcher.Web.Controllers;
 
 public class RecipesController(AppDbContext dbContext) : Controller
@@ -30,6 +32,7 @@ public class RecipesController(AppDbContext dbContext) : Controller
 
         return RedirectToAction(nameof(Index));
     }
+    /*
     //Edit GET
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
@@ -51,6 +54,86 @@ public class RecipesController(AppDbContext dbContext) : Controller
      
         existingRecipe.Name = recipe.Name;
         existingRecipe.PreparationMinutes = recipe.PreparationMinutes;
+        await dbContext.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
+    */
+    //Controller — Edit GET
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var existingRecipe = await dbContext.Recipes
+            .Include(r => r.RecipeIngredients)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (existingRecipe == null) return NotFound();
+
+        var viewModel = await BuildEditRecipeViewModel(existingRecipe);
+
+        return View(viewModel);
+    }
+    private async Task<EditRecipeViewModel> BuildEditRecipeViewModel(Recipe recipe)
+    {
+        var selectedIds = recipe.RecipeIngredients.Select(ri => ri.IngredientId).ToHashSet();
+        var allIngredients = await dbContext.Ingredients.OrderBy(i => i.Name).ToListAsync();
+
+        return new EditRecipeViewModel
+        {
+            Id = recipe.Id,
+            Name = recipe.Name,
+            PreparationMinutes = recipe.PreparationMinutes,
+            Ingredients = allIngredients.Select(i => new IngredientOptionViewModel
+            {
+                Id = i.Id,
+                Name = i.Name,
+                Selected = selectedIds.Contains(i.Id)
+            }).ToList()
+        };
+    }
+    //Controller — Edit POST
+    [HttpPost]
+    public async Task<IActionResult> Edit(int id, EditRecipeViewModel model, int[] ingredientIds)
+    {
+        if (model.Id != id) return NotFound();
+
+        if (!ModelState.IsValid)
+        {
+            var existingForRebuild = await dbContext.Recipes
+                .Include(r => r.RecipeIngredients)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (existingForRebuild == null) return NotFound();
+
+            var rebuilt = await BuildEditRecipeViewModel(existingForRebuild);
+            rebuilt.Name = model.Name;
+            rebuilt.PreparationMinutes = model.PreparationMinutes;
+            foreach (var option in rebuilt.Ingredients)
+            {
+                option.Selected = ingredientIds.Contains(option.Id);
+            }
+
+            return View(rebuilt);
+        }
+
+        var existingRecipe = await dbContext.Recipes
+            .Include(r => r.RecipeIngredients)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (existingRecipe == null) return NotFound();
+
+        existingRecipe.Name = model.Name;
+        existingRecipe.PreparationMinutes = model.PreparationMinutes;
+
+        existingRecipe.RecipeIngredients.Clear();
+        foreach (var ingredientId in ingredientIds)
+        {
+            existingRecipe.RecipeIngredients.Add(new RecipeIngredient
+            {
+                RecipeId = existingRecipe.Id,
+                IngredientId = ingredientId
+            });
+        }
+
         await dbContext.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
@@ -82,9 +165,8 @@ public class RecipesController(AppDbContext dbContext) : Controller
     //Details GET
     public async Task<IActionResult> Details(int id)
     {
-        var recipe = await dbContext.Recipes.FindAsync(id);
+        var recipe = await dbContext.Recipes.Include(r => r.RecipeIngredients).ThenInclude(r => r.Ingredient).FirstOrDefaultAsync(r => r.Id == id);
         if (recipe is null) return NotFound();
-
         return View(recipe);
     }
 }

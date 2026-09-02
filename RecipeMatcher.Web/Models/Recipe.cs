@@ -4,6 +4,8 @@ namespace RecipeMatcher.Web.Models;
 
 public class Recipe
 {
+    public ICollection<RecipeIngredient> RecipeIngredients { get; set; } = new List<RecipeIngredient>();
+
     public int Id { get; set; }
 
     [Required]

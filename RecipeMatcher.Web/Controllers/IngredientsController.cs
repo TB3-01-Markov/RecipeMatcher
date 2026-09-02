@@ -22,19 +22,15 @@ public class IngredientsController(AppDbContext dbContext) : Controller
     public async Task<IActionResult> Create(Ingredient ingredient)
     {
         if (!ModelState.IsValid) return View(ingredient);
-        
-
+        var ie = await isExist(ingredient);
+        if (ie) return View(ingredient);
         dbContext.Ingredients.Add(ingredient);
         await dbContext.SaveChangesAsync();
-
-
-
-
         return RedirectToAction(nameof(Index));
     }
-    public async bool isExist(Ingredient ingredient)
+    public async Task<bool> isExist(Ingredient ingredient, int? excludeId = null)
     {
-        bool nameExists = await dbContext.Ingredients.AnyAsync(i => i.Name == ingredient.Name);
+        bool nameExists = await dbContext.Ingredients.AnyAsync(i => i.Name == ingredient.Name && (i.Id != excludeId));
 
         if (nameExists)
         {
@@ -50,6 +46,7 @@ public class IngredientsController(AppDbContext dbContext) : Controller
         var existingIngredient = await dbContext.Ingredients.FindAsync(id);
         if (existingIngredient == null) return NotFound();
 
+
         return View(existingIngredient);
     }
     //Edit POST
@@ -61,6 +58,9 @@ public class IngredientsController(AppDbContext dbContext) : Controller
 
         var existingIngredient = await dbContext.Ingredients.FindAsync(id);
         if (existingIngredient == null) return NotFound();
+
+        var ie = await isExist(ingredient, id);
+        if (ie) return View(ingredient);
 
         existingIngredient.Name = ingredient.Name;
         await dbContext.SaveChangesAsync();

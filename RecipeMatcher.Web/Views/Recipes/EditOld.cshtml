@@ -1,6 +1,6 @@
-﻿@model EditRecipeViewModel
+﻿@model Recipe
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" >
     <div asp-validation-summary="ModelOnly"></div>
 
     <input asp-for="Id" type="hidden" />
@@ -13,15 +13,6 @@
     <input asp-for="PreparationMinutes" />
     <span asp-validation-for="PreparationMinutes"></span>
 
-    <h3>Ingredients</h3>
-    @for (var i = 0; i < Model.Ingredients.Count; i++)
-    {
-        <label>
-            <input type="checkbox" name="ingredientIds" value="@Model.Ingredients[i].Id"
-                   checked="@Model.Ingredients[i].Selected" />
-            @Model.Ingredients[i].Name
-        </label>
-    }
-
     <button type="submit">Edit</button>
 </form>
+

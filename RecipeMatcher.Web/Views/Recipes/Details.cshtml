@@ -1,5 +1,7 @@
 ﻿@model Recipe
 
 <h1>@Model.Name</h1>
-
 <p>Preparation time: @Model.PreparationMinutes minutes</p>
+
+<h2>Ingredients</h2>
+<ul> @foreach (var ri in Model.RecipeIngredients){ <li>@ri.Ingredient.Name</li> }</ul>
