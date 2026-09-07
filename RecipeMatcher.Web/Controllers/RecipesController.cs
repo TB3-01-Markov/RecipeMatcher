@@ -92,9 +92,10 @@ public class RecipesController(AppDbContext dbContext) : Controller
     }
     //Controller — Edit POST
     [HttpPost]
-    public async Task<IActionResult> Edit(int id, EditRecipeViewModel model, int[] ingredientIds)
+    public async Task<IActionResult> Edit(int id, EditRecipeViewModel model, int[]? ingredientIds)
     {
         if (model.Id != id) return NotFound();
+        if (ingredientIds == null) ingredientIds = [];
 
         if (!ModelState.IsValid)
         {

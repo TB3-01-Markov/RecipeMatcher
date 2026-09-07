@@ -1,0 +1,25 @@
+﻿@model List<MatcherResultViewModel>
+
+<h1>Matching Recipes</h1>
+
+@if (!Model.Any())
+{
+    <p>No matching recipes found.</p>
+}
+else
+{
+    @foreach (var recipe in Model)
+    {
+        <div>
+            <h2>@recipe.Name</h2>
+            <p>Preparation time: @recipe.PreparationMinutes minutes</p>
+
+            <ul>
+                @foreach (var name in recipe.IngredientNames)
+                {
+                    <li>@name</li>
+                }
+            </ul>
+        </div>
+    }
+}

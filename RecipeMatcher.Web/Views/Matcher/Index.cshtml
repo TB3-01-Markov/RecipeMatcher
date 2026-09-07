@@ -1,0 +1,16 @@
+﻿@model List<IngredientOptionViewModel>
+
+<h1>Ingredients</h1>
+
+<form asp-action="MatchRecipeIngredients" method="post">
+    @foreach (var ingredient in Model)
+    {
+        <label>
+            <input type="checkbox" name="ingredientIds" value="@ingredient.Id" checked="@ingredient.Selected" />
+            @ingredient.Name
+        </label>
+        <br />
+    }
+
+    <button type="submit">Submit</button>
+</form>

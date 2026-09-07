@@ -1,0 +1,27 @@
+﻿@model List<NearMatchResultViewModel>
+
+<h1>Near Matching</h1>
+
+@if (!Model.Any())
+{
+    <p>Alles ingredient was found.</p>
+}
+else
+{
+    @foreach (var recipe in Model)
+    {
+        <div>
+            <h2>@recipe.Name</h2>
+            <p>Preparation time: @recipe.PreparationMinutes minutes</p>
+
+            <ul>
+                @foreach (var name in recipe.MissingIngredients)
+                {
+                    <li>@name</li>
+                }
+            </ul>
+
+            <p>Near Matcher count: @recipe.MissingCount</p>
+        </div>
+    }
+}
