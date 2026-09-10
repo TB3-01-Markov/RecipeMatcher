@@ -52,18 +52,13 @@ public class MatcherController(AppDbContext dbContext) : Controller
     public async Task<IActionResult> NearMatchRecipeIngredients(int[]? ingredientIds)
     {
         if (ingredientIds == null) ingredientIds = [];
-        /*
-        List<Recipe> WithMissingIngedientRecipes = await dbContext.Recipes
-                                                   .Include(r => r.RecipeIngredients).ThenInclude(ri => ri.Ingredient)
-                                                   .Where(recipe => recipe.RecipeIngredients.Any(ri => !ingredientIds.Contains(ri.IngredientId)))
-                                                   .ToListAsync();
-        */
+       
         List<Recipe> AllRecipesOredered = await dbContext.Recipes
                                           .Include(r => r.RecipeIngredients).ThenInclude(ri => ri.Ingredient)
                                           .OrderBy(recipe => recipe.RecipeIngredients.Count(ri => !ingredientIds.Contains(ri.IngredientId)))
                                           .ThenBy(recipe => recipe.Name)
                                           .ToListAsync();
-    var listMatcherResultViewModel = new List<NearMatchResultViewModel>();
+        var listMatcherResultViewModel = new List<NearMatchResultViewModel>();
         foreach (var recipe in AllRecipesOredered)
         {
             listMatcherResultViewModel.Add(NearMatchResult(recipe, ingredientIds));
@@ -107,7 +102,6 @@ public class MatcherController(AppDbContext dbContext) : Controller
             }
         }
         ditNearMatcherResultViewModel.MissingIngredients.AddRange(ingredientsWhatWeHadNot);
-        //nmrvm.MissingCount = nmrvm.MissingIngredients.Count();
         ditNearMatcherResultViewModel.MissingCount = recipe.RecipeIngredients.Count(ri => !ingredientIds.Contains(ri.IngredientId));
         return ditNearMatcherResultViewModel;
     }
