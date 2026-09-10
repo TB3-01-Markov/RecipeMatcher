@@ -1,10 +1,11 @@
 ﻿@model List<NearMatchResultViewModel>
 
+<form asp-action="NearMatchRecipeIngredients" method="post">
 <h1>Near Matching</h1>
 
 @if (!Model.Any())
 {
-    <p>Alles ingredient was found.</p>
+    <p>No recipes found.</p>
 }
 else
 {
@@ -13,15 +14,21 @@ else
         <div>
             <h2>@recipe.Name</h2>
             <p>Preparation time: @recipe.PreparationMinutes minutes</p>
-
+            <p>Missing ingredients count: @recipe.MissingCount :</p>
+            @if (@recipe.MissingCount == 0)
+            {
+                <p>Alles ingredient was found.</p>
+            }
+            else if (@recipe.MissingCount > 0)
+            {
             <ul>
                 @foreach (var name in recipe.MissingIngredients)
                 {
                     <li>@name</li>
                 }
             </ul>
-
-            <p>Near Matcher count: @recipe.MissingCount</p>
+            }   
         </div>
     }
 }
+</form>
