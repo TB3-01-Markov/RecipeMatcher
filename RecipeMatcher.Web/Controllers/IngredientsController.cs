@@ -22,12 +22,14 @@ public class IngredientsController(AppDbContext dbContext) : Controller
     public async Task<IActionResult> Create(Ingredient ingredient)
     {
         if (!ModelState.IsValid) return View(ingredient);
+        // MME: ie=> exists
         var ie = await isExist(ingredient);
         if (ie) return View(ingredient);
         dbContext.Ingredients.Add(ingredient);
         await dbContext.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
+    // MME: PascalCase i.e. start with a capital
     public async Task<bool> isExist(Ingredient ingredient, int? excludeId = null)
     {
         bool nameExists = await dbContext.Ingredients.AnyAsync(i => i.Name == ingredient.Name && (i.Id != excludeId));
@@ -58,7 +60,7 @@ public class IngredientsController(AppDbContext dbContext) : Controller
 
         var existingIngredient = await dbContext.Ingredients.FindAsync(id);
         if (existingIngredient == null) return NotFound();
-
+        // MME: ie, see above
         var ie = await isExist(ingredient, id);
         if (ie) return View(ingredient);
 
@@ -101,4 +103,4 @@ public class IngredientsController(AppDbContext dbContext) : Controller
 }
 
 
-  
+

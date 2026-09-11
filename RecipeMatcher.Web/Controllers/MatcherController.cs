@@ -8,11 +8,12 @@ namespace RecipeMatcher.Web.Controllers;
 
 public class MatcherController(AppDbContext dbContext) : Controller
 {
+    // MME: Only one view, and hence two controller actions (Index GET & Index POST) needed.
     public async Task<IActionResult> Index()
     {
         var ingredients = await dbContext.Ingredients.OrderBy(ingredient => ingredient.Name).ToListAsync();
-        List<IngredientOptionViewModel> ingredientsSelect = ingredients.Select(i => new IngredientOptionViewModel 
-                                                            { Id = i.Id, Name = i.Name, Selected = false }).ToList();
+        List<IngredientOptionViewModel> ingredientsSelect = ingredients.Select(i => new IngredientOptionViewModel
+        { Id = i.Id, Name = i.Name, Selected = false }).ToList();
         return View(ingredientsSelect);
     }
 
@@ -39,6 +40,7 @@ public class MatcherController(AppDbContext dbContext) : Controller
         var listMatcherResultViewModel = new List<MatcherResultViewModel>();
         foreach (var recipe in matchingRecipes)
         {
+            // MME: use object initializer: new() { Id = recipe.Id, ... }
             MatcherResultViewModel ditMatcherResultViewModel = new MatcherResultViewModel();
             ditMatcherResultViewModel.Id = recipe.Id;
             ditMatcherResultViewModel.Name = recipe.Name;
@@ -63,14 +65,14 @@ public class MatcherController(AppDbContext dbContext) : Controller
                                           .OrderBy(recipe => recipe.RecipeIngredients.Count(ri => !ingredientIds.Contains(ri.IngredientId)))
                                           .ThenBy(recipe => recipe.Name)
                                           .ToListAsync();
-    var listMatcherResultViewModel = new List<NearMatchResultViewModel>();
+        var listMatcherResultViewModel = new List<NearMatchResultViewModel>();
         foreach (var recipe in AllRecipesOredered)
         {
             listMatcherResultViewModel.Add(NearMatchResult(recipe, ingredientIds));
         }
         return View(listMatcherResultViewModel);
     }
-    
+
     public bool MatchResult(Recipe recipe, int[] ingredientIds)
     {
         List<int> ingredientsIdsInThisRecipe = recipe.RecipeIngredients.Select(ri => ri.IngredientId).ToList();
@@ -87,7 +89,7 @@ public class MatcherController(AppDbContext dbContext) : Controller
         }
         return canWeKookDitRecipe;
     }
-    
+
     public NearMatchResultViewModel NearMatchResult(Recipe recipe, int[] ingredientIds)
     {
         List<int> ingredientsIdsInThisRecipe = recipe.RecipeIngredients.Select(ri => ri.IngredientId).ToList();
@@ -103,7 +105,7 @@ public class MatcherController(AppDbContext dbContext) : Controller
             {
                 Ingredient recipeIngedient = recipe.RecipeIngredients.Where(ri => ingredient == ri.Ingredient.Id).Select(ri => ri.Ingredient).First();
                 string recipeIngredientName = recipeIngedient.Name;
-                if (!string.IsNullOrWhiteSpace(recipeIngredientName)) ingredientsWhatWeHadNot.Add(recipeIngredientName); 
+                if (!string.IsNullOrWhiteSpace(recipeIngredientName)) ingredientsWhatWeHadNot.Add(recipeIngredientName);
             }
         }
         ditNearMatcherResultViewModel.MissingIngredients.AddRange(ingredientsWhatWeHadNot);
