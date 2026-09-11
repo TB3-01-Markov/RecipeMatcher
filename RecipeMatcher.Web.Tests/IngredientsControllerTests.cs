@@ -2,16 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using RecipeMatcher.Web.Data;
 using RecipeMatcher.Web.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-using static System.Formats.Asn1.AsnWriter;
-
 
 namespace RecipeMatcher.Web.Tests;
 
@@ -45,8 +35,6 @@ public class IngredientsControllerTests : IClassFixture<CustomWebApplicationFact
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            //var count = await dbContext.Recipes.CountAsync();
-            //Assert.Equal(0, count);
             Assert.DoesNotContain(dbContext.Ingredients, i => i.Name == "");
         }
     }
@@ -54,9 +42,7 @@ public class IngredientsControllerTests : IClassFixture<CustomWebApplicationFact
     [Fact]
     public async Task Post_Create_With_Name()
     {
-        //var dbContext = _factory.Services.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
-
-
+        
         var client = _factory.CreateClient();
         var formData = new Dictionary<string, string> { ["Name"] = "Melk" };
         var response = await client.PostAsync("/ingredients/create", new FormUrlEncodedContent(formData));

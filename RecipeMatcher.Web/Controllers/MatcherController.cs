@@ -68,6 +68,29 @@ public class MatcherController(AppDbContext dbContext) : Controller
         return View(listMatcherResultViewModel);
     }
 
+    public NearMatchResultViewModel NearMatchResult(Recipe recipe, int[] ingredientIds)
+    {
+        List<int> ingredientsIdsInThisRecipe = recipe.RecipeIngredients.Select(ri => ri.IngredientId).ToList();
+        var ingredientsWhatWeHadNot = new List<string>();
+        var ditNearMatcherResultViewModel = new NearMatchResultViewModel();
+        ditNearMatcherResultViewModel.RecipeId = recipe.Id;
+        ditNearMatcherResultViewModel.Name = recipe.Name;
+        ditNearMatcherResultViewModel.PreparationMinutes = recipe.PreparationMinutes;
+
+        foreach (var ingredient in ingredientsIdsInThisRecipe)
+        {
+            if (!ingredientIds.Contains(ingredient))
+            {
+                Ingredient recipeIngedient = recipe.RecipeIngredients.Where(ri => ingredient == ri.Ingredient.Id).Select(ri => ri.Ingredient).First();
+                string recipeIngredientName = recipeIngedient.Name;
+                if (!string.IsNullOrWhiteSpace(recipeIngredientName)) ingredientsWhatWeHadNot.Add(recipeIngredientName);
+            }
+        }
+        ditNearMatcherResultViewModel.MissingIngredients.AddRange(ingredientsWhatWeHadNot);
+        ditNearMatcherResultViewModel.MissingCount = recipe.RecipeIngredients.Count(ri => !ingredientIds.Contains(ri.IngredientId));
+        return ditNearMatcherResultViewModel;
+    }
+
     public bool MatchResult(Recipe recipe, int[] ingredientIds)
     {
         List<int> ingredientsIdsInThisRecipe = recipe.RecipeIngredients.Select(ri => ri.IngredientId).ToList();
@@ -83,28 +106,5 @@ public class MatcherController(AppDbContext dbContext) : Controller
             }
         }
         return canWeKookDitRecipe;
-    }
-
-    public NearMatchResultViewModel NearMatchResult(Recipe recipe, int[] ingredientIds)
-    {
-        List<int> ingredientsIdsInThisRecipe = recipe.RecipeIngredients.Select(ri => ri.IngredientId).ToList();
-        var ingredientsWhatWeHadNot = new List<string>();
-        var ditNearMatcherResultViewModel = new NearMatchResultViewModel();
-        ditNearMatcherResultViewModel.RecipeId = recipe.Id;
-        ditNearMatcherResultViewModel.Name = recipe.Name;
-        ditNearMatcherResultViewModel.PreparationMinutes = recipe.PreparationMinutes;
-
-        foreach (var ingredient in ingredientsIdsInThisRecipe)
-        {
-            if (ingredientIds.Contains(ingredient) == false)
-            {
-                Ingredient recipeIngedient = recipe.RecipeIngredients.Where(ri => ingredient == ri.Ingredient.Id).Select(ri => ri.Ingredient).First();
-                string recipeIngredientName = recipeIngedient.Name;
-                if (!string.IsNullOrWhiteSpace(recipeIngredientName)) ingredientsWhatWeHadNot.Add(recipeIngredientName);
-            }
-        }
-        ditNearMatcherResultViewModel.MissingIngredients.AddRange(ingredientsWhatWeHadNot);
-        ditNearMatcherResultViewModel.MissingCount = recipe.RecipeIngredients.Count(ri => !ingredientIds.Contains(ri.IngredientId));
-        return ditNearMatcherResultViewModel;
     }
 }
