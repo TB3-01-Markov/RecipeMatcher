@@ -15,6 +15,8 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace RecipeMatcher.Web.Tests;
 
+// MME: DRY (Don't Repeat Yourself), use a baseclass for the tests
+// See IntegrationTests class in BookTracker
 public class IngredientsControllerTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
@@ -29,7 +31,7 @@ public class IngredientsControllerTests : IClassFixture<CustomWebApplicationFact
     {
         var client = _factory.CreateClient();
 
-        var formData = new Dictionary<string, string>{["Name"] = ""};
+        var formData = new Dictionary<string, string> { ["Name"] = "" };
 
         var response = await client.PostAsync("/ingredients/create", new FormUrlEncodedContent(formData));
 
@@ -53,7 +55,7 @@ public class IngredientsControllerTests : IClassFixture<CustomWebApplicationFact
     public async Task Post_Create_With_Name()
     {
         //var dbContext = _factory.Services.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
-        
+
 
         var client = _factory.CreateClient();
         var formData = new Dictionary<string, string> { ["Name"] = "Melk" };
@@ -62,7 +64,7 @@ public class IngredientsControllerTests : IClassFixture<CustomWebApplicationFact
         using (var scope = _factory.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-           
+
             Assert.Contains(dbContext.Ingredients, i => i.Name == "Melk");
         }
     }
@@ -174,7 +176,7 @@ public class IngredientsControllerTests : IClassFixture<CustomWebApplicationFact
             Assert.Contains(dbContext.Ingredients, i => i.Name == "Old Name @LactosaVrijMelk");
         }
     }
-    
+
     [Fact]
     public async Task Get_Ingredients_Returns_Ok_And_Shows_Ingredient()
     {
@@ -184,7 +186,7 @@ public class IngredientsControllerTests : IClassFixture<CustomWebApplicationFact
 
             await dbContext.Database.EnsureCreatedAsync();
 
-            dbContext.Ingredients.Add(new Ingredient{Name = "Test melk"});
+            dbContext.Ingredients.Add(new Ingredient { Name = "Test melk" });
 
             await dbContext.SaveChangesAsync();
         }
@@ -256,7 +258,7 @@ public class IngredientsControllerTests : IClassFixture<CustomWebApplicationFact
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
 
-            var newIngredient = new Ingredient { Name = "Get Delete Test Ingredient"};
+            var newIngredient = new Ingredient { Name = "Get Delete Test Ingredient" };
             dbContext.Ingredients.Add(newIngredient);
             await dbContext.SaveChangesAsync();
 
@@ -276,7 +278,7 @@ public class IngredientsControllerTests : IClassFixture<CustomWebApplicationFact
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
 
-            var newIngredient = new Ingredient { Name = "Post Delete Test Ingredient"};
+            var newIngredient = new Ingredient { Name = "Post Delete Test Ingredient" };
             dbContext.Ingredients.Add(newIngredient);
 
             await dbContext.SaveChangesAsync();

@@ -10,6 +10,7 @@ public class RecipesController(AppDbContext dbContext) : Controller
 {
     public async Task<IActionResult> Index()
     {
+        // MME: Remove dead comment
         //var recipes =  new List<Recipe>{ new() { Id = 1, Name = "Pancakes", PreparationMinutes = 20 }, new() { Id = 2, Name = "Tomato Soup", PreparationMinutes = 30 }};
         var recipes = await dbContext.Recipes.OrderBy(recipe => recipe.Name).ToListAsync();
 
@@ -26,13 +27,14 @@ public class RecipesController(AppDbContext dbContext) : Controller
     public async Task<IActionResult> Create(Recipe recipe)
     {
         if (!ModelState.IsValid) return View(recipe);
-        
+
         dbContext.Recipes.Add(recipe);
         await dbContext.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
     }
     /*
+    // MME: Remove dead comment
     //Edit GET
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
