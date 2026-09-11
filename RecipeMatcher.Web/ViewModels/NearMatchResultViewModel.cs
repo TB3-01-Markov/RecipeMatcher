@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace RecipeMatcher.Web.ViewModels;
+﻿namespace RecipeMatcher.Web.ViewModels;
 
 public class NearMatchResultViewModel
 {

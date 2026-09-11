@@ -10,20 +10,13 @@ namespace RecipeMatcher.Web.Tests;
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
     private readonly SqliteConnection _connection =  new("DataSource=:memory:");
-
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         _connection.Open();
-
         builder.ConfigureServices(services =>
         {
             var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
-
-            if (descriptor is not null)
-            {
-                services.Remove(descriptor);
-            }
-
+            if (descriptor is not null)services.Remove(descriptor);
             services.AddDbContext<AppDbContext>(options => options.UseSqlite(_connection));
         });
     }
@@ -31,10 +24,6 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
-
-        if (disposing)
-        {
-            _connection.Dispose();
-        }
+        if (disposing)_connection.Dispose();
     }
 }

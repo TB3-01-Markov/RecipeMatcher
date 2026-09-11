@@ -25,7 +25,7 @@ public class MatcherController(AppDbContext dbContext) : Controller
         var ingredientsSelect = ingredients.Select(
                                 i => new IngredientOptionViewModel
                                 { Id = i.Id, Name = i.Name, Selected = ingredientIds.Contains(i.Id) }
-                                ).ToList(); // List<IngredientOptionViewModel>
+                                ).ToList();
         return View(ingredientsSelect);
     }
 
@@ -40,12 +40,13 @@ public class MatcherController(AppDbContext dbContext) : Controller
         var listMatcherResultViewModel = new List<MatcherResultViewModel>();
         foreach (var recipe in matchingRecipes)
         {
-            // MME: use object initializer: new() { Id = recipe.Id, ... }
-            MatcherResultViewModel ditMatcherResultViewModel = new MatcherResultViewModel();
-            ditMatcherResultViewModel.Id = recipe.Id;
-            ditMatcherResultViewModel.Name = recipe.Name;
-            ditMatcherResultViewModel.PreparationMinutes = recipe.PreparationMinutes;
-            ditMatcherResultViewModel.IngredientNames = recipe.RecipeIngredients.Select(ri => ri.Ingredient.Name).ToList();
+            var ditMatcherResultViewModel = new MatcherResultViewModel()
+            {
+                Id = recipe.Id,
+                Name = recipe.Name,
+                PreparationMinutes = recipe.PreparationMinutes,
+                IngredientNames = recipe.RecipeIngredients.Select(ri => ri.Ingredient.Name).ToList()
+            };
             listMatcherResultViewModel.Add(ditMatcherResultViewModel);
         }
         return View(listMatcherResultViewModel);
@@ -72,11 +73,6 @@ public class MatcherController(AppDbContext dbContext) : Controller
     {
         List<int> ingredientsIdsInThisRecipe = recipe.RecipeIngredients.Select(ri => ri.IngredientId).ToList();
         var ingredientsWhatWeHadNot = new List<string>();
-        var ditNearMatcherResultViewModel = new NearMatchResultViewModel();
-        ditNearMatcherResultViewModel.RecipeId = recipe.Id;
-        ditNearMatcherResultViewModel.Name = recipe.Name;
-        ditNearMatcherResultViewModel.PreparationMinutes = recipe.PreparationMinutes;
-
         foreach (var ingredient in ingredientsIdsInThisRecipe)
         {
             if (!ingredientIds.Contains(ingredient))
@@ -86,8 +82,14 @@ public class MatcherController(AppDbContext dbContext) : Controller
                 if (!string.IsNullOrWhiteSpace(recipeIngredientName)) ingredientsWhatWeHadNot.Add(recipeIngredientName);
             }
         }
-        ditNearMatcherResultViewModel.MissingIngredients.AddRange(ingredientsWhatWeHadNot);
-        ditNearMatcherResultViewModel.MissingCount = recipe.RecipeIngredients.Count(ri => !ingredientIds.Contains(ri.IngredientId));
+        var ditNearMatcherResultViewModel = new NearMatchResultViewModel()
+        {
+            RecipeId = recipe.Id,
+            Name = recipe.Name,
+            PreparationMinutes = recipe.PreparationMinutes,
+            MissingIngredients = ingredientsWhatWeHadNot,
+            MissingCount = recipe.RecipeIngredients.Count(ri => !ingredientIds.Contains(ri.IngredientId))
+        };
         return ditNearMatcherResultViewModel;
     }
 

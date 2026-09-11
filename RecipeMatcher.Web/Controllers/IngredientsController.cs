@@ -11,13 +11,13 @@ public class IngredientsController(AppDbContext dbContext) : Controller
         var ingredients = await dbContext.Ingredients.OrderBy(ingredient => ingredient.Name).ToListAsync();
         return View(ingredients);
     }
-    //Create GET
+   
     [HttpGet]
     public IActionResult Create()
     {
         return View();
     }
-    //Create POST
+    
     [HttpPost]
     public async Task<IActionResult> Create(Ingredient ingredient)
     {
@@ -41,7 +41,7 @@ public class IngredientsController(AppDbContext dbContext) : Controller
         }
         else return false;
     }
-    //Edit GET
+  
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
@@ -51,7 +51,7 @@ public class IngredientsController(AppDbContext dbContext) : Controller
 
         return View(existingIngredient);
     }
-    //Edit POST
+
     [HttpPost]
     public async Task<IActionResult> Edit(int id, Ingredient ingredient)
     {
@@ -60,7 +60,6 @@ public class IngredientsController(AppDbContext dbContext) : Controller
 
         var existingIngredient = await dbContext.Ingredients.FindAsync(id);
         if (existingIngredient == null) return NotFound();
-        // MME: ie, see above
         var exists = await IsExist(ingredient, id);
         if (exists) return View(ingredient);
 
@@ -68,7 +67,7 @@ public class IngredientsController(AppDbContext dbContext) : Controller
         await dbContext.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
-    //Delete GET
+
     [HttpGet]
     [ActionName("Delete")]
     public async Task<IActionResult> DeleteGet(int id)
@@ -78,7 +77,7 @@ public class IngredientsController(AppDbContext dbContext) : Controller
 
         return View(existingIngredient);
     }
-    //Delete POST
+   
     [HttpPost]
     [ActionName("Delete")]
     public async Task<IActionResult> DeletePostConfirmed(int id)
@@ -92,7 +91,6 @@ public class IngredientsController(AppDbContext dbContext) : Controller
         }
         return RedirectToAction(nameof(Index));
     }
-    //Details GET
     public async Task<IActionResult> Details(int id)
     {
         var ingredient = await dbContext.Ingredients.FindAsync(id);

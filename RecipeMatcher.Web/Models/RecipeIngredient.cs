@@ -1,4 +1,6 @@
-﻿namespace RecipeMatcher.Web.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RecipeMatcher.Web.Models;
 
 public class RecipeIngredient
 {
