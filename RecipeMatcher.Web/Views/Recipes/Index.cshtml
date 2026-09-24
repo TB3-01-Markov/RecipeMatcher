@@ -1,10 +1,15 @@
 ﻿@model IReadOnlyList<RecipeMatcher.Web.Models.Recipe>
 
 <h1>Recipes</h1>
-
+<p><a asp-action="Create">Add new recipe</a></p>
 <ul>
     @foreach (var recipe in Model)
     {
-        <li>@recipe.Name, @recipe.PreparationMinutes minutes <a asp-action="Details" asp-route-id="@recipe.Id">Details</a></li>
+        <li>
+            @recipe.Name, @recipe.PreparationMinutes minutes 
+            <a asp-action="Details" asp-route-id="@recipe.Id">Details</a>
+            <a asp-action="Edit" asp-route-id="@recipe.Id">Edit</a>
+            <a asp-action="Delete" asp-route-id="@recipe.Id">Delete</a>
+        </li>
     }
 </ul>

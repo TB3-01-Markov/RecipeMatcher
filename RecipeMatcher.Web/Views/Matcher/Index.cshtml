@@ -1,9 +1,7 @@
-﻿@model List<IngredientOptionViewModel>
-
+﻿@model ViewModelMetIngredientOptionAndResultMatchLists 
 <h1>Ingredients</h1>
-
-<form asp-action="MatchRecipeIngredients" method="post">
-    @foreach (var ingredient in Model)
+<form asp-action="Index" method="post">
+    @foreach (var ingredient in Model.IngredientOption)
     {
         <label>
             <input type="checkbox" name="ingredientIds" value="@ingredient.Id" checked="@ingredient.Selected" />
@@ -11,9 +9,43 @@
         </label>
         <br />
     }
-
     <button type="submit">Submit</button>
 </form>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+}
+
+@if (Model.HasSearched)
+{
+    <h2>Near Matching Recipes</h2>
+    @if (!Model.ResultMatch.Any())
+    {
+        <p>No matching recipes found.</p>
+    }
+    else
+    {
+        @foreach (var recipe in Model.ResultMatch)
+        {
+            <div>
+                <h2>@recipe.Name</h2>
+                <p>Preparation time: @recipe.PreparationMinutes minutes</p>
+                <ul>
+                    @foreach (var name in recipe.IngredientNames)
+                    {
+                        <li>@name</li>
+                    }
+                </ul>
+
+                @if (recipe.MissingCount == 0)
+                {
+                    <p>Alles ingredient was found.</p>
+                }
+                else
+                {
+                    <p>Missing: @string.Join(", ", recipe.MissingIngredients)</p>
+                    <p>Missing count: @recipe.MissingCount</p>
+                }
+            </div>
+        }
+    }
 }

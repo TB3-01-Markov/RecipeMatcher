@@ -30,7 +30,7 @@ public class IngredientsController(AppDbContext dbContext) : Controller
         return RedirectToAction(nameof(Index));
     }
    
-    public async Task<bool> IsExist(Ingredient ingredient, int? excludeId = null)
+    private async Task<bool> IsExist(Ingredient ingredient, int? excludeId = null)
     {
         bool nameExists = await dbContext.Ingredients.AnyAsync(i => i.Name == ingredient.Name && (i.Id != excludeId));
 
